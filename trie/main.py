@@ -1,6 +1,8 @@
-from pathlib import Path
+import json
+
 from os import listdir
 from os.path import isfile, join
+from pathlib import Path
 
 """
 TrieNode, add, find_prefix, and build are heavily influenced by
@@ -20,12 +22,10 @@ class TrieNode(object):
         # Is it the last character of the word.`
         self.word_finished = False
         # the ID's of the emails containing the word
-        self.email_ids = []
-        # How many times this character appeared in the addition process
-        self.counter = 1
+        self.email_ids = {}
     
 
-def add(root, word, email_id):
+def add(root, word, email_id, email_directory):
     """
     Adding a word in the trie structure
     """
@@ -35,9 +35,6 @@ def add(root, word, email_id):
         # Search for the character in the children of the present `node`
         for child in node.children:
             if child.char == char:
-                # We found it, increase the counter by 1 to keep track that another
-                # word has it as well
-                child.counter += 1
                 # And point the node to the child that contains this char
                 node = child
                 found_in_child = True
@@ -50,10 +47,16 @@ def add(root, word, email_id):
             node = new_node
     # Everything finished. Mark it as the end of a word.
     node.word_finished = True
-    node.email_ids.append(email_id)
+
+    # add data around email containing word to node
+    if node.email_ids.get(email_directory) is None:
+        node.email_ids[email_directory] = []
+
+    if email_id not in node.email_ids[email_directory]:
+        node.email_ids[email_directory].append(email_id)
 
 
-def find_prefix(root, prefix):
+def find_exact(root, prefix):
     """
     Check and return 
       1. If the prefix exsists in any of the words we added so far
@@ -78,33 +81,73 @@ def find_prefix(root, prefix):
         if char_not_found:
             return False, 0
     # Well, we are here means we have found the prefix. Return true to indicate that
-    # And also the counter of the last node. This indicates how many words have this
-    # prefix
-    return True, node.counter, node.email_ids
+    # which emails contain the string
+    return True, node
+
+def find_prefix(root, prefix):
+    # get to the starting point
+    found, current = find_exact(root, prefix)
+
+    if not found:
+        return False
+
+    found = []
+    stack = [(current, prefix)]
+    while stack:
+        current, prefix = stack.pop()
+
+        if current.word_finished:
+            # this is a complete word, named by prefix
+            found.append(prefix)
+
+        # add the children to the stack, each with their letter added to the
+        # prefix value.
+        for child in current.children:
+            if child is None:
+                continue
+            stack.append((child, prefix + child.char))
+
+    results = []
+
+    for leaf_string in found:
+        result = find_exact(root, leaf_string)
+        if result[0]:
+            results.append((leaf_string, result))
+
+    return results
 
 def build():
-    # all_documents
-    path = "/Users/jmaxim/code/columntax/engineering-challenge/data/skilling-j/all_documents"
-    files = [f for f in listdir(path) if isfile(join(path, f))]
-
+    directories = [
+        '_sent_mail',
+        'all_documents',
+        'calendar',
+        'contacts',
+        'deleted_items',
+        'discussion_threads',
+        'inbox',
+        'mark',
+        'notes_inbox',
+        'sent',
+        'sent_items'
+    ]
     # init trie
     root = TrieNode('*')
 
-    # read each file
-    for file in files:
-        # get email_id
-        email_id = file
-        pointer = open(f"{path}/{file}", "rb")
-        # read each line
-        for line in pointer:
-            # read each word
-            words = str(line).split(" ")
-            for word in words:
-                # add word to trie
-                add(root, word.lower(), email_id)
+    for directory in directories:
+        path = f"/Users/jmaxim/code/columntax/engineering-challenge/data/skilling-j/{directory}"
+        files = [f for f in listdir(path) if isfile(join(path, f))]
+
+        # read each file
+        for file in files:
+            # get email_id
+            email_id = file
+            pointer = open(f"{path}/{file}", "rb")
+            # read each line
+            for line in pointer:
+                # read each word
+                words = str(line).split(" ")
+                for word in words:
+                    # add word to trie
+                    add(root, word.lower(), email_id, directory)
 
     return root
-
-
-root = build()
-print(find_prefix(root, 'hammer'))
