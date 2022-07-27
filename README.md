@@ -35,7 +35,7 @@ hamm
 - I load all the data to memory
     - A requirement of the challenge is "You can't just load everything into RAM. You need to be as efficient as possible about organizing the data on disk, keeping as little data as possible in memory."
     - I did not meet this requirement, I current load everything to memory.
-    - To fix my implementation
+    - To fix my implementation I would update my `trie.main.build` function to build a persistent trie - one that's saved to disc. And I'd update my `trie.main.find_exact` function to read from that file.
 - I have some `nice-to-have TODOs` [https://github.com/jeffthemaximum/ct-engineering-challenge/pull/2](https://github.com/jeffthemaximum/ct-engineering-challenge/pull/2) that I didn't complete.
 
 
