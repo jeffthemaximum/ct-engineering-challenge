@@ -1,7 +1,7 @@
 import json
 
 from timer.timer import Timer
-from trie.main import build, find_prefix
+from trie.main import build, find_prefix, find_exact
 
 t1 = Timer()
 
@@ -13,11 +13,19 @@ t1.stop()
 while True:
     term = input("What searm term would you like to search for?\n")
 
-    t2 = Timer()
-    t2.start()
+    # t2 = Timer()
+    # t2.start()
+    # exact_results = find_exact(root, term.lower())
+    # print("Time to search trie:")
+    # t2.stop()
+
+    t3 = Timer()
+    t3.start()
     results = find_prefix(root, term.lower())
     print("Time to search trie:")
-    t2.stop()
+    t3.stop()
 
-    print(results[0])
-    print(json.dumps(results[1].email_ids, sort_keys=True, indent=4))
+    for result in results:
+        prefix, result_data = result
+        print(prefix)
+        print(json.dumps(result_data[1].email_ids, sort_keys=True, indent=4))

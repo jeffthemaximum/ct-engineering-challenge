@@ -56,7 +56,7 @@ def add(root, word, email_id, email_directory):
         node.email_ids[email_directory].append(email_id)
 
 
-def find_prefix(root, prefix):
+def find_exact(root, prefix):
     """
     Check and return 
       1. If the prefix exsists in any of the words we added so far
@@ -83,6 +83,38 @@ def find_prefix(root, prefix):
     # Well, we are here means we have found the prefix. Return true to indicate that
     # which emails contain the string
     return True, node
+
+def find_prefix(root, prefix):
+    # get to the starting point
+    found, current = find_exact(root, prefix)
+
+    if not found:
+        return False
+
+    found = []
+    stack = [(current, prefix)]
+    while stack:
+        current, prefix = stack.pop()
+
+        if current.word_finished:
+            # this is a complete word, named by prefix
+            found.append(prefix)
+
+        # add the children to the stack, each with their letter added to the
+        # prefix value.
+        for child in current.children:
+            if child is None:
+                continue
+            stack.append((child, prefix + child.char))
+
+    results = []
+
+    for leaf_string in found:
+        result = find_exact(root, leaf_string)
+        if result[0]:
+            results.append((leaf_string, result))
+
+    return results
 
 def build():
     directories = [
