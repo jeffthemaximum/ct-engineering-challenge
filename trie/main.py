@@ -1,6 +1,8 @@
-from pathlib import Path
+import json
+
 from os import listdir
 from os.path import isfile, join
+from pathlib import Path
 
 """
 TrieNode, add, find_prefix, and build are heavily influenced by
@@ -49,7 +51,9 @@ def add(root, word, email_id, email_directory):
     # add data around email containing word to node
     if node.email_ids.get(email_directory) is None:
         node.email_ids[email_directory] = []
-    node.email_ids[email_directory].append(email_id)
+
+    if email_id not in node.email_ids[email_directory]:
+        node.email_ids[email_directory].append(email_id)
 
 
 def find_prefix(root, prefix):
@@ -78,7 +82,7 @@ def find_prefix(root, prefix):
             return False, 0
     # Well, we are here means we have found the prefix. Return true to indicate that
     # which emails contain the string
-    return True, node.email_ids
+    return True, node
 
 def build():
     directories = [
@@ -115,10 +119,3 @@ def build():
                     add(root, word.lower(), email_id, directory)
 
     return root
-
-
-root = build()
-
-while True:
-    term = input("What searm term would you like to search for?\n")
-    print(find_prefix(root, term.lower()))
