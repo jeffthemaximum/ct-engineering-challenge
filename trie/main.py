@@ -20,12 +20,12 @@ class TrieNode(object):
         # Is it the last character of the word.`
         self.word_finished = False
         # the ID's of the emails containing the word
-        self.email_ids = []
+        self.email_ids = {}
         # How many times this character appeared in the addition process
         self.counter = 1
     
 
-def add(root, word, email_id):
+def add(root, word, email_id, email_directory):
     """
     Adding a word in the trie structure
     """
@@ -50,7 +50,11 @@ def add(root, word, email_id):
             node = new_node
     # Everything finished. Mark it as the end of a word.
     node.word_finished = True
-    node.email_ids.append(email_id)
+
+    # add data around email containing word to node
+    if node.email_ids.get(email_directory) is None:
+        node.email_ids[email_directory] = []
+    node.email_ids[email_directory].append(email_id)
 
 
 def find_prefix(root, prefix):
@@ -83,25 +87,38 @@ def find_prefix(root, prefix):
     return True, node.counter, node.email_ids
 
 def build():
-    # all_documents
-    path = "/Users/jmaxim/code/columntax/engineering-challenge/data/skilling-j/all_documents"
-    files = [f for f in listdir(path) if isfile(join(path, f))]
-
+    directories = [
+        '_sent_mail',
+        'all_documents',
+        'calendar',
+        'contacts',
+        'deleted_items',
+        'discussion_threads',
+        'inbox',
+        'mark',
+        'notes_inbox',
+        'sent',
+        'sent_items'
+    ]
     # init trie
     root = TrieNode('*')
 
-    # read each file
-    for file in files:
-        # get email_id
-        email_id = file
-        pointer = open(f"{path}/{file}", "rb")
-        # read each line
-        for line in pointer:
-            # read each word
-            words = str(line).split(" ")
-            for word in words:
-                # add word to trie
-                add(root, word.lower(), email_id)
+    for directory in directories:
+        path = f"/Users/jmaxim/code/columntax/engineering-challenge/data/skilling-j/{directory}"
+        files = [f for f in listdir(path) if isfile(join(path, f))]
+
+        # read each file
+        for file in files:
+            # get email_id
+            email_id = file
+            pointer = open(f"{path}/{file}", "rb")
+            # read each line
+            for line in pointer:
+                # read each word
+                words = str(line).split(" ")
+                for word in words:
+                    # add word to trie
+                    add(root, word.lower(), email_id, directory)
 
     return root
 
