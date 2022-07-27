@@ -55,7 +55,7 @@ hamm
 - As a second method, I plan to build out a data structure "from scratch". In this case, I'm planning to build a trie.
 - This trie will have a letter from each word as a node.
 - At a leaf, it will have a list of all the email id's that contain that word.
-- I've drawn an image below to hopefully demostrate.
+- I've drawn an image [here](https://github.com/jeffthemaximum/ct-engineering-challenge/blob/main/trie/IMG_8753.png) to hopefully demostrate.
 - This v1, MVP datastructure is something I think I can implement in the time I have left.
 - There's a few limitations to this strategy. A key one is that it only matches on single words, such as "Enron" and not on phrases, such as "I love fraud".
 
