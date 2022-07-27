@@ -21,8 +21,6 @@ class TrieNode(object):
         self.word_finished = False
         # the ID's of the emails containing the word
         self.email_ids = {}
-        # How many times this character appeared in the addition process
-        self.counter = 1
     
 
 def add(root, word, email_id, email_directory):
@@ -35,9 +33,6 @@ def add(root, word, email_id, email_directory):
         # Search for the character in the children of the present `node`
         for child in node.children:
             if child.char == char:
-                # We found it, increase the counter by 1 to keep track that another
-                # word has it as well
-                child.counter += 1
                 # And point the node to the child that contains this char
                 node = child
                 found_in_child = True
@@ -82,9 +77,8 @@ def find_prefix(root, prefix):
         if char_not_found:
             return False, 0
     # Well, we are here means we have found the prefix. Return true to indicate that
-    # And also the counter of the last node. This indicates how many words have this
-    # prefix
-    return True, node.counter, node.email_ids
+    # which emails contain the string
+    return True, node.email_ids
 
 def build():
     directories = [
@@ -124,4 +118,7 @@ def build():
 
 
 root = build()
-print(find_prefix(root, 'hammer'))
+
+while True:
+    term = input("What searm term would you like to search for?\n")
+    print(find_prefix(root, term.lower()))
