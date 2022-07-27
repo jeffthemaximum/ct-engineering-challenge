@@ -2,7 +2,7 @@
 
 ### some info
 - I solved the challenge using a modified trie, and this is in the `/trie` directory
-- I also imagined solving the challenge with postgres and with a suffix tree. I wrote a little about these below, but I did not write any code.
+- I also imagined solving the challenge with postgres or, alternately, with a suffix tree. I wrote a little about these below, but I did not write any code.
 - I have a working implementation, but it has some limitations. See `major current limitations` below.
 - It was important to me to finish my code and submit my result under 3 hrs, so some parts may currently feel unfinished.
 
