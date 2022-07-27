@@ -6,18 +6,13 @@ from trie.main import build, find_prefix, find_exact
 t1 = Timer()
 
 t1.start()
+print("initializing data structure...")
 root = build()
 print("Time to build trie:")
 t1.stop()
 
 while True:
     term = input("What searm term would you like to search for?\n")
-
-    # t2 = Timer()
-    # t2.start()
-    # exact_results = find_exact(root, term.lower())
-    # print("Time to search trie:")
-    # t2.stop()
 
     t3 = Timer()
     t3.start()
