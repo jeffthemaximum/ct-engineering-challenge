@@ -1,3 +1,7 @@
+"""
+Borrowed from https://nbviewer.org/gist/BenLangmead/6665861
+"""
+
 class SuffixTree(object):
     
     class Node(object):
